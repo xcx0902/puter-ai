@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Puter AI Services</title>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100 p-4">
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-4xl text-center flex flex-col items-center">
+        <h1 class="text-3xl font-bold mb-6">Puter AI Services</h1>
+        <div class="w-full max-w-2xl">
+            <label class="block text-lg font-medium mb-2">Choose Service:</label>
+            <select id="service" class="w-full p-3 border rounded-lg mb-4">
+                <option value="tts">Text to Speech</option>
+                <option value="chat">AI Chat</option>
+            </select>
+            <textarea id="text" class="w-full p-3 border rounded-lg mb-4" rows="5" placeholder="Enter text..."></textarea>
+            <button id="execute" class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition text-lg">Execute</button>
+        </div>
+        <pre id="output" class="mt-6 text-left text-lg bg-gray-200 p-4 rounded-lg overflow-auto w-full max-h-96 hidden"></pre>
+    </div>
+    
+    <script>
+        document.getElementById('execute').addEventListener('click', async () => {
+            const service = document.getElementById('service').value;
+            const text = document.getElementById('text').value || "Hello world! Puter is amazing!";
+            const output = document.getElementById('output');
+            
+            if (service === "tts") {
+                puter.ai.txt2speech(text).then(audio => audio.play());
+            } else if (service === "chat") {
+                output.classList.remove('hidden');
+                output.textContent = "";
+                output.scrollTop = output.scrollHeight;
+                const response = await puter.ai.chat(text, {stream: true});
+                
+                for await (const part of response) {
+                    output.textContent += part?.text;
+                    output.scrollTop = output.scrollHeight;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
